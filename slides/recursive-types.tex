@@ -1,0 +1,410 @@
+\documentclass[10pt]{beamer}
+
+\usetheme[progressbar=frametitle]{metropolis}
+\usepackage{appendixnumberbeamer}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot}
+
+\usepackage{xspace}
+
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+\newcommand{\lam}[2]{$\lambda$ #1 . #2}
+\newcommand{\yc}{\lam{f}{(\lam{x}{f (x x)})(\lam{x}{f (x x)})}}
+\newcommand{\app}[2]{#1 \; #2}
+
+\title{Typing the Y Combinator}
+% \date{\today}
+\date{}
+\author{Esther Wang}
+\institute{Software Engineer - Airbnb}
+% \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Table of contents}
+  \setbeamertemplate{section in toc}[sections numbered]
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\section{Why have recursive types?}
+
+\begin{frame}[fragile]{The Y combinator}
+  \begin{center}
+  \uncover<1->{\texttt{\yc}} \\
+  \vspace{0.5in}
+  \uncover<2->{What if we want static types?}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Omega: a smaller example}
+  \begin{center}
+  \uncover<1->{\texttt{\lam{x}{x x}}} \\
+  \end{center}
+  \vspace{0.4in}
+  \begin{enumerate}
+  \uncover<2->{\item \texttt{x} must be a function} \\
+  \uncover<3->{\item \texttt{x :: a -> b}} \\
+  \uncover<4->{\item \texttt{a} must be the type of \texttt{x}, so \texttt{a = a -> b}}
+  \uncover<5->{\item \texttt{a -> b = (a -> b) -> b = ((a -> b) -> b) -> b = ...}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Simple types are insufficient}
+  Some terms from the untyped lambda calculus cannot be expressed in the simply-typed lambda calulus \\
+  \vspace{0.2in}
+  \uncover<1->{\texttt{\lam{x}{x x}}} \\
+  \uncover<2->{\texttt{\yc}} \\
+  \vspace{0.3in}
+  \uncover<3->{Solution: \alert{recursive types}} \\
+\end{frame}
+
+\section{Examples of recursive types}
+
+\begin{frame}[fragile]{Recursive types are ubiquitous}
+  \begin{verbatim}
+  data Nat = Zero | Succ Nat
+  data IntList = Nil | Cons Int IntList
+  data StringTree = Leaf String | Node StringTree StringTree
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Recursive types in type theory}
+  \begin{itemize}
+    \uncover<1->{\item Recursive types have the form $\mu a . \app{F}{a}$, where $F$ is a type expression}
+    \uncover<2->{\item $\mu$ is the type-level \textbf{fixpoint operator}}
+    \uncover<3->{\item Adding $\mu$ to our type system allows us to type any term from the untyped lambda calculus}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Nat}
+  \begin{center}
+  \uncover<1->{\texttt{data Nat = Zero | Succ Nat}}
+  \end{center}
+  \begin{enumerate}
+    \uncover<2->{\item \texttt{Nat} should satisfy the type equation \texttt{Nat = 1 + Nat}}
+    \uncover<3->{\item \texttt{Nat = $\mu$ a . 1 + a}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Example: IntList}
+  \begin{center}
+  \uncover<1->{\texttt{data IntList = Nil | Cons Int IntList}}
+  \vspace{0.2in}
+  \uncover<2->{\item \texttt{IntList = $\mu$ a . 1 + Int * a}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Variadic Functions}
+  A \emph{variadic function} accepts any number of arguments. For example: \\
+  \vspace{0.2in}
+  \begin{verbatim}
+  sumAllInts 1
+  --> 1
+  sumAllInts 1 2 3
+  --> 6
+  \end{verbatim}
+  \begin{enumerate}
+    \uncover<2->{\item \texttt{sumAllInts :: Int -> ???}}
+    \uncover<3->{\item \texttt{sumAllInts :: Int -> (Int + ???)}}
+    \uncover<4->{\item \texttt{sumAllInts :: $\mu$ a . Int -> (Int + a)}}
+  \end{enumerate}
+\end{frame}
+
+\section{Fixpoints}
+
+\begin{frame}[fragile]{Definitions}
+  Fixed point $x$
+  $$x = \app{f}{x} = \app{f}{(\app{f}{x})} = \cdots$$ \\
+  \vspace{0.2in}
+  Fixpoint combinator \textbf{fix}
+  $$\app{\text{fix}}{f} = x$$ \\
+  \vspace{0.2in}
+  Combined definitions
+  $$\app{\text{fix}}{f} = \app{f}{(\app{\text{fix}}{f})}$$
+\end{frame}
+
+\begin{frame}[fragile]{Fixpoint combinators}
+  \begin{itemize}
+    \item The Y Combinator is \textbf{fix} on the \alert{term} level
+    \item $\mu$ is \textbf{fix} on the \alert{type} level
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Defining \textbf{$\mu$}}
+  \begin{itemize}
+    \uncover<1->{\item Given a recursive type $$\mu a . \app{F}{a}$$}
+    \uncover<2->{\item By the definition of a fixpoint combinator, $\app{\mu}{F} = x$, where $x$ is a fixed point}
+    \uncover<3->{\item By the definition of fixed points, $x = \app{F}{x}$}
+    \uncover<4->{\item Substituting for x, $$\app{\mu}{F} = \app{F}{(\app{\mu}{F})}$$}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Defining \textbf{$\mu$}}
+  $\mu$ is defined as $$\app{\mu}{F} = \app{F}{(\app{\mu}{F})}$$
+
+  You can substitute the recursive type into itself \\
+  \begin{center}
+  \texttt{Nat = $\mu$ a . 1 + a = 1 + ($\mu$ a . 1 + a) = ...}
+  \end{center}
+\end{frame}
+
+\section{Typing the Y combinator}
+
+\begin{frame}[fragile]{Typing the Omega combinator}
+  \begin{center}
+  \texttt{\lam{x}{x x}} \\
+  \end{center}
+  \vspace{0.4in}
+  \begin{enumerate}
+    \item \texttt{x :: a -> b}
+    \item \texttt{a} must be the type of \texttt{x}, so \texttt{a = a -> b}
+    \uncover<2->{\item \texttt{a = $\mu$ a . a -> b}}
+    \uncover<3->{\item \texttt{x :: $\mu$ a . a -> b}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Typing the Y combinator}
+  \begin{center}
+  \texttt{\yc} \\
+  \end{center}
+  \vspace{0.2in}
+  \begin{enumerate}
+    \uncover<2->{\item \texttt{f :: a -> b}}
+    \uncover<3->{\item \texttt{x :: c -> a}}
+    \uncover<4->{\item \texttt{c = c -> a}, so \texttt{c = $\mu$ c . c -> a}}
+    \uncover<5->{\item The Y combinator has type \texttt{(a -> b) -> b}, for fixed \texttt{a} and \texttt{b}}
+    \uncover<6->{\item There is one more constraint, which is that \texttt{a = b}. Can you figure out why?}
+  \end{enumerate}
+\end{frame}
+
+\section{Equi vs. iso-recursive types}
+
+\begin{frame}[fragile]{Equi-recurisive types}
+  \begin{itemize}
+    \uncover<1->{\item In our examples so far, we've implicitly used $$\app{\mu}{F} = \app{F}{(\app{\mu}{F})}$$}
+    \uncover<2->{\item \alert{equi-recursive} approach, where a recursive type is interchangeable with its expansion}
+    \uncover<3->{\item Easy to add to a type system}
+    \uncover<4->{\item Difficult to implement in a typechecker}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Iso-recursive types}
+  \begin{itemize}
+    \uncover<1->{\item In the \alert{iso-recursive} approach, $$\app{\mu}{F} \sim \app{F}{(\app{\mu}{F})}$$}
+    \uncover<2->{\item A recursive type and its expansion are \emph{isomorphic}}
+    \uncover<3->{\item The functions \texttt{roll} and \texttt{unroll} witness the isomorphism}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Statics: iso-recursive types}
+  Let \texttt{S = $\mu$ a . T}, where \texttt{T = F a}
+  \begin{center}
+    \uncover<1->{\texttt{unroll[S] :: S -> [a $\mapsto$ S] T}} \\
+    \uncover<2->{\texttt{roll[S] :: [a $\mapsto$ S] T -> S}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Dynamics: Iso-recursive types}
+  Roll and unroll are inverses
+  \begin{center}
+    \uncover<1->{\texttt{unroll[S] (roll[T] (e)) $\rightarrow$ e}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Use in production languages}
+  \begin{itemize}
+    \uncover<1->{\item Haskell and OCaml use iso-recursive types}
+    \uncover<2->{\item \texttt{roll} and \texttt{unroll} are baked into constructors and pattern matching}
+    \uncover<3->{\item In Java, class definitions implicity \texttt{roll}, and calling a method uses \texttt{unroll}}
+    \uncover<4->{\item The functions \texttt{roll} and \texttt{unroll} witness the isomorphism}
+  \end{itemize}
+\end{frame}
+
+\section{Recursive types in Haskell}
+
+\begin{frame}[fragile]{Fix in Haskell}
+  Haskell has recursion, so no need to use the Y combinator
+  \begin{verbatim}
+    fix f = f (fix f)
+  \end{verbatim}
+  \uncover<2->{If this feature didn't exist, would Haskell still be Turing-complete?}
+\end{frame}
+
+\begin{frame}[fragile]{Naive implementation of the Y combinator}
+  \begin{verbatim}
+    Prelude> y = \f -> (\x -> f (x x)) (\x -> f (x x))
+
+  <interactive>:7:23: error:
+    • Occurs check: cannot construct the infinite type:
+        t0 ~ t0 -> t
+      Expected type: t0 -> t
+        Actual type: (t0 -> t) -> t
+    • In the first argument of ‘x’, namely ‘x’
+      In the first argument of ‘f’, namely ‘(x x)’
+      In the expression: f (x x)
+    • Relevant bindings include
+        x :: (t0 -> t) -> t (bound at <interactive>:7:13)
+        f :: t -> t (bound at <interactive>:7:6)
+        y :: (t -> t) -> t (bound at <interactive>:7:1)
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+Define $\app{\mu}{F}$
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Remember the types}
+  \begin{center}
+  \texttt{\yc} \\
+  \end{center}
+  \vspace{0.2in}
+  \begin{enumerate}
+    \item \texttt{f :: a -> b}
+    \item \texttt{x :: $\mu$ c . c -> a}
+    \uncover<2->{\item We need to be able to write the type of \texttt{x} in terms of $\mu a . \app{F}{a}$}
+    \uncover<3->{\item \texttt{x :: $\mu$ c . F(c)}, where \texttt{F(c) = c -> a} for some fixed \texttt{a}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+Define \texttt{F(c) = c -> a}
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+
+    newtype F' c a = F' (c -> a)
+    unF (F' f) = f
+    type F c = Mu (F' c)
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+Define \texttt{F(c) = c -> a}
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+
+    -- Note: this used to incorrectly say c -> a.
+    newtype F' c a = F' (a -> c)
+    unF (F' f) = f
+    type F c = Mu (F' c)
+    unroll' = unF  . unroll
+    roll'   = roll . F'
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+
+    newtype F' c a = F' (a -> c)
+    unF (F' f) = f
+    type F c = Mu (F' c)
+    unroll' = unF  . unroll
+    roll'   = roll . F'
+
+    y f = (\x -> f (unroll' x x))
+      $ roll' (\x -> f (unroll' x x))
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Recursion schemes}
+\texttt{Mu} is the same as \texttt{Fix} from the \emph{recursion-schemes} library!
+  \begin{verbatim}
+    newtype Fix f = Fix (f (Fix f))
+
+    unfix (Fix f) = f
+    fix = Fix
+  \end{verbatim}
+\end{frame}
+
+\section{Some additional theory}
+
+\begin{frame}[fragile]{Data and codata}
+  \begin{itemize}
+    \uncover<1->{\item Data consists of indefinitely large, but finite structures}
+      \begin{itemize}
+        \uncover<2->{\item For example, finite lists}
+        \uncover<3->{\item Data is defined by constructors}
+        \uncover<4->{\item \texttt{Cons} allows us to build a bigger list using an element and a given list}
+        \uncover<5->{\item Use structural induction for proofs}
+      \end{itemize}
+    \uncover<6->{\item Codata consists of data, but also includes potentially infinite structures}
+      \begin{itemize}
+        \uncover<7->{\item For example, streams}
+        \uncover<8->{\item Codata is defined by destructors}
+        \uncover<9->{\item \texttt{Head} and \texttt{Tail} allow us to get an element and a new stream, given a stream}
+        \uncover<10->{\item Use coinduction for proofs}
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Least fixed points}
+  \begin{itemize}
+    \uncover<1->{\item Recall that \texttt{IntList = $\mu$ a . 1 + Int * a}}
+    \uncover<2->{\item \texttt{F a = 1 + Int * a}}
+    \uncover<3->{\item The type of finite integer lists is the \textbf{least fixed point} of F}
+    \uncover<4->{\item The least fixed point is the least set $X$ for which $X = \app{F}{X}$\footnotemark}
+    \uncover<5->{\item All elements of $X$ can be generated by $F$}
+  \end{itemize}
+  \uncover<6->{\footnotetext[1]{See the Knaster-Tarski Theorem for a rigorous definition}}
+\end{frame}
+
+\begin{frame}[fragile]{Greatest fixed points}
+  \begin{itemize}
+    \uncover<1->{\item \texttt{IntStream = $\mu$ a . Int * a}}
+    \uncover<2->{\item \texttt{F a = Int * a}}
+    \uncover<3->{\item The type of integer streams is the \textbf{greatest fixed point} of F}
+    \uncover<4->{\item The greatest fixed point is the greatest set $X$ for which $X = \app{F}{X}$\footnotemark}
+  \end{itemize}
+  \uncover<4->{\footnotetext[2]{See the Knaster-Tarski Theorem for a rigorous definition}}
+\end{frame}
+
+\begin{frame}[fragile]{Why it matters}
+  \begin{itemize}
+    \uncover<1->{\item The typechecking algorithm for equi-recursive types works by determining whether a type is a member of a recursive type's least/greatest fixed point}
+    \uncover<2->{\item For category theorists, data is an initial F-algebra, codata is a terminal F-coalgebra}
+  \end{itemize}
+\end{frame}
+
+\section*{Conclusion}
+
+\begin{frame}[fragile]{Conclusion}
+  \begin{itemize}
+    \uncover<1->{\item The type operator $\mu$ allows us to type recursive data and terms}
+    \uncover<2->{\item $\mu$ is defined as a type-level fixpoint combinator: $\mu a . \app{F}{a}$}
+    \uncover<3->{\item The equi-recursive approach treats a recursive type as \emph{equal} to its expansion}
+    \uncover<4->{\item The iso-recursive approach treats a recursive type as \emph{isomorphic} to its expansion}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Further reading}
+  \begin{enumerate}
+    \item \href{https://mitpress.mit.edu/books/types-and-programming-languages}{\emph{Types and Programming Languages}} by Benjamin Pierce
+    \item \href{http://homepages.inf.ed.ac.uk/wadler/papers/free-rectypes/free-rectypes.txt}{``Recursive types for free!"} by Philip Wadler
+    \item \href{http://blog.sumtypeofway.com/an-introduction-to-recursion-schemes/}{Recursion schemes}
+    \item \href{https://jozefg.bitbucket.io/posts/2013-11-09-iso-recursive-types.html}{Fixpoints and iso-recursive types}
+    \item \href{http://types2004.lri.fr/SLIDES/altenkirch.pdf}{Data and codata}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Questions?}
+  \graphicspath{ {/Users/esther_wang/Desktop/} }
+  \includegraphics[scale=0.5]{cat.jpg}
+\end{frame}
+\end{document}
