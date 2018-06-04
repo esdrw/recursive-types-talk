@@ -10,14 +10,17 @@
 \usepgfplotslibrary{dateplot}
 
 \usepackage{xspace}
-\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
 
-\title{Metropolis}
-\subtitle{A modern beamer theme}
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+\newcommand{\lam}[2]{$\lambda$ #1 . #2}
+\newcommand{\yc}{\lam{f}{(\lam{x}{f (x x)})(\lam{x}{f (x x)})}}
+\newcommand{\app}[2]{#1 \; #2}
+
+\title{Typing the Y Combinator}
 % \date{\today}
 \date{}
-\author{Matthias Vogelgesang}
-\institute{Center for modern beamer themes}
+\author{Esther Wang}
+\institute{Software Engineer - Airbnb}
 % \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
 
 \begin{document}
@@ -29,311 +32,679 @@
   \tableofcontents[hideallsubsections]
 \end{frame}
 
-\section{Introduction}
+\section{Why have recursive types?}
 
-\begin{frame}[fragile]{Metropolis}
-
-  The \themename theme is a Beamer theme with minimal visual noise
-  inspired by the \href{https://github.com/hsrmbeamertheme/hsrmbeamertheme}{\textsc{hsrm} Beamer
-  Theme} by Benjamin Weiss.
-
-  Enable the theme by loading
-
-  \begin{verbatim}    \documentclass{beamer}
-    \usetheme{metropolis}\end{verbatim}
-
-  Note, that you have to have Mozilla's \emph{Fira Sans} font and XeTeX
-  installed to enjoy this wonderful typography.
-\end{frame}
-\begin{frame}[fragile]{Sections}
-  Sections group slides of the same topic
-
-  \begin{verbatim}    \section{Elements}\end{verbatim}
-
-  for which \themename provides a nice progress indicator \ldots
+\begin{frame}[fragile]{The Y combinator}
+  \begin{center}
+  \uncover<1->{\texttt{\yc}} \\
+  \vspace{0.5in}
+  \uncover<2->{What if we want static types?}
+  \end{center}
 \end{frame}
 
-\section{Titleformats}
-
-\begin{frame}{Metropolis titleformats}
-	\themename supports 4 different titleformats:
-	\begin{itemize}
-		\item Regular
-		\item \textsc{Smallcaps}
-		\item \textsc{allsmallcaps}
-		\item ALLCAPS
-	\end{itemize}
-	They can either be set at once for every title type or individually.
+\begin{frame}[fragile]{Omega: a smaller example}
+  \begin{center}
+  \uncover<1->{\texttt{\lam{x}{x x}}} \\
+  \end{center}
+  \vspace{0.4in}
+  \begin{enumerate}
+  \uncover<2->{\item \texttt{x} must be a function} \\
+  \uncover<3->{\item \texttt{x :: a -> b}} \\
+  \uncover<4->{\item \texttt{a} must be the type of \texttt{x}, so \texttt{a = a -> b}}
+  \uncover<5->{\item \texttt{a -> b = (a -> b) -> b = ((a -> b) -> b) -> b = ...}}
+  \end{enumerate}
 \end{frame}
 
-{
-    \metroset{titleformat frame=smallcaps}
-\begin{frame}{Small caps}
-	This frame uses the \texttt{smallcaps} titleformat.
-
-	\begin{alertblock}{Potential Problems}
-		Be aware, that not every font supports small caps. If for example you typeset your presentation with pdfTeX and the Computer Modern Sans Serif font, every text in smallcaps will be typeset with the Computer Modern Serif font instead.
-	\end{alertblock}
-\end{frame}
-}
-
-{
-\metroset{titleformat frame=allsmallcaps}
-\begin{frame}{All small caps}
-	This frame uses the \texttt{allsmallcaps} titleformat.
-
-	\begin{alertblock}{Potential problems}
-		As this titleformat also uses smallcaps you face the same problems as with the \texttt{smallcaps} titleformat. Additionally this format can cause some other problems. Please refer to the documentation if you consider using it.
-
-		As a rule of thumb: Just use it for plaintext-only titles.
-	\end{alertblock}
-\end{frame}
-}
-
-{
-\metroset{titleformat frame=allcaps}
-\begin{frame}{All caps}
-	This frame uses the \texttt{allcaps} titleformat.
-
-	\begin{alertblock}{Potential Problems}
-		This titleformat is not as problematic as the \texttt{allsmallcaps} format, but basically suffers from the same deficiencies. So please have a look at the documentation if you want to use it.
-	\end{alertblock}
-\end{frame}
-}
-
-\section{Elements}
-
-\begin{frame}[fragile]{Typography}
-      \begin{verbatim}The theme provides sensible defaults to
-\emph{emphasize} text, \alert{accent} parts
-or show \textbf{bold} results.\end{verbatim}
-
-  \begin{center}becomes\end{center}
-
-  The theme provides sensible defaults to \emph{emphasize} text,
-  \alert{accent} parts or show \textbf{bold} results.
+\begin{frame}[fragile]{Simple types are insufficient}
+  Some terms from the untyped lambda calculus cannot be expressed in the simply-typed lambda calulus \\
+  \vspace{0.2in}
+  \uncover<1->{\texttt{\lam{x}{x x}}} \\
+  \uncover<2->{\texttt{\yc}} \\
+  \vspace{0.3in}
+  \uncover<3->{Solution: \alert{recursive types}} \\
 \end{frame}
 
-\begin{frame}{Font feature test}
+\section{Examples of recursive types}
+
+\begin{frame}[fragile]{Recursive types are ubiquitous}
+  \begin{verbatim}
+  data Nat = Zero | Succ Nat
+  data IntList = Nil | Cons Int IntList
+  data StringTree = Leaf String | Node StringTree StringTree
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Recursive types in type theory}
   \begin{itemize}
-    \item Regular
-    \item \textit{Italic}
-    \item \textsc{SmallCaps}
-    \item \textbf{Bold}
-    \item \textbf{\textit{Bold Italic}}
-    \item \textbf{\textsc{Bold SmallCaps}}
-    \item \texttt{Monospace}
-    \item \texttt{\textit{Monospace Italic}}
-    \item \texttt{\textbf{Monospace Bold}}
-    \item \texttt{\textbf{\textit{Monospace Bold Italic}}}
+    \uncover<1->{\item Recursive types have the form $\mu a . \app{F}{a}$}
+    \uncover<2->{\item $\mu$ is the type-level \textbf{fixpoint operator}}
+    \uncover<3->{\item Adding $\mu$ to our type system allows us to type any term from the untyped lambda calculus}
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Lists}
-  \begin{columns}[T,onlytextwidth]
-    \column{0.33\textwidth}
-      Items
+\begin{frame}[fragile]{Example: Nat}
+  \begin{center}
+  \uncover<1->{\texttt{data Nat = Zero | Succ Nat}}
+  \end{center}
+  \begin{enumerate}
+    \uncover<2->{\item \texttt{Nat} should satisfy the type equation \texttt{Nat = 1 + Nat}}
+    \uncover<3->{\item \texttt{Nat = $\mu$ a . 1 + a}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Example: IntList}
+  \begin{center}
+  \uncover<1->{\texttt{data IntList = Nil | Cons Int IntList}}
+  \vspace{0.2in}
+  \uncover<2->{\item \texttt{IntList = $\mu$ a . 1 + Int * a}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Variadic Functions}
+  A \emph{variadic function} accepts any number of arguments. For example: \\
+  \vspace{0.2in}
+  \begin{verbatim}
+  sumAllInts 1
+  --> 1
+  sumAllInts 1 2 3
+  --> 6
+  \end{verbatim}
+  \begin{enumerate}
+    \uncover<2->{\item \texttt{sumAllInts :: Int -> ???}}
+    \uncover<3->{\item \texttt{sumAllInts :: Int -> (Int + ???)}}
+    \uncover<4->{\item \texttt{sumAllInts :: $\mu$ a . Int -> (Int + a)}}
+  \end{enumerate}
+\end{frame}
+
+\section{Fixpoints}
+
+\begin{frame}[fragile]{Definitions}
+  Fixed point $x$
+  $$x = \app{f}{x} = \app{f}{(\app{f}{x})} = \cdots$$ \\
+  \vspace{0.2in}
+  Fixpoint combinator \textbf{fix}
+  $$\app{\text{fix}}{f} = x$$
+\end{frame}
+
+\begin{frame}[fragile]{Fixpoint combinators}
+  \begin{itemize}
+    \item The Y Combinator is \textbf{fix} on the \alert{term} level
+    \item $\mu$ is \textbf{fix} on the \alert{type} level
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Defining \textbf{$\mu$}}
+  \begin{itemize}
+    \uncover<1->{\item Given a recursive type $$\mu a . \app{F}{a}$$}
+    \uncover<2->{\item Since $\mu$ is a fixpoint combinator, let $\app{\mu}{F} = x$}
+    \uncover<3->{\item The fixed point is $x$ such that $x = \app{F}{x}$}
+    \uncover<4->{\item Substituting for x, $$\app{\mu}{F} = \app{F}{(\app{\mu}{F})}$$}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Defining \textbf{$\mu$}}
+  $\mu$ is defined as $$\app{\mu}{F} = \app{F}{(\app{\mu}{F})}$$
+
+  To give a concrete example, \\
+  \begin{center}
+  \texttt{Nat = $\mu$ a . 1 + a = 1 + ($\mu$ a . 1 + a) = ...}
+  \end{center}
+\end{frame}
+
+\section{Typing the Y combinator}
+
+\begin{frame}[fragile]{Typing the Omega combinator}
+  \begin{center}
+  \texttt{\lam{x}{x x}} \\
+  \end{center}
+  \vspace{0.4in}
+  \begin{enumerate}
+    \item \texttt{x :: a -> b}
+    \item \texttt{a} must be the type of \texttt{x}, so \texttt{a = a -> b}
+    \uncover<2->{\item \texttt{a = $\mu$ a . a -> b}}
+    \uncover<3->{\item \texttt{x :: $\mu$ a . a -> b}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Typing the Y combinator}
+  \begin{center}
+  \texttt{\yc} \\
+  \end{center}
+  \vspace{0.2in}
+  \begin{enumerate}
+    \uncover<2->{\item \texttt{f :: a -> b}}
+    \uncover<3->{\item \texttt{x :: c -> a}}
+    \uncover<4->{\item \texttt{c = c -> a}, so \texttt{c = $\mu$ c . c -> a}}
+    \uncover<5->{\item The Y combinator has type \texttt{(a -> b) -> b}, for fixed \texttt{a} and \texttt{b}}
+  \end{enumerate}
+\end{frame}
+
+\section{Equi vs. iso-recursive types}
+
+\begin{frame}[fragile]{Equi-recurisive types}
+  \begin{itemize}
+    \uncover<1->{\item In our examples so far, we've implicitly used $$\app{\mu}{F} = \app{F}{(\app{\mu}{F})}$$}
+    \uncover<2->{\item \alert{equi-recursive} approach, where a recursive type is interchangeable with its expansion}
+    \uncover<3->{\item Easy to add to a type system}
+    \uncover<4->{\item Difficult to implement in a typechecker}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Iso-recursive types}
+  \begin{itemize}
+    \uncover<1->{\item In the \alert{iso-recursive} approach, $$\app{\mu}{F} \sim \app{F}{(\app{\mu}{F})}$$}
+    \uncover<2->{\item A recursive type and its expansion are \emph{isomorphic}}
+    \uncover<3->{\item The functions \texttt{roll} and \texttt{unroll} witness the isomorphism}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Statics: iso-recursive types}
+  Let \texttt{S = $\mu$ a . T}, where \texttt{T = F a}
+  \begin{center}
+    \uncover<1->{\texttt{unroll[S] :: S -> [a $\mapsto$ S] T}} \\
+    \uncover<2->{\texttt{roll[S] :: [a $\mapsto$ S] T -> S}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Dynamics: Iso-recursive types}
+  Roll and unroll are inverses
+  \begin{center}
+    \uncover<1->{\texttt{unroll[S] (roll[T] (e)) $\rightarrow$ e}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Use in production languages}
+  \begin{itemize}
+    \uncover<1->{\item Haskell and OCaml use iso-recursive types}
+    \uncover<2->{\item \texttt{roll} and \texttt{unroll} are baked into constructors and pattern matching}
+    \uncover<3->{\item In Java, class definitions implicity \texttt{roll}, and calling a method uses \texttt{unroll}}
+    \uncover<4->{\item The functions \texttt{roll} and \texttt{unroll} witness the isomorphism}
+  \end{itemize}
+\end{frame}
+
+\section{Recursive types in Haskell}
+
+\begin{frame}[fragile]{Fix in Haskell}
+  Haskell has recursion, so no need to use the Y combinator
+  \begin{verbatim}
+    fix f = f (fix f)
+  \end{verbatim}
+  \uncover<2->{If this feature didn't exist, would Haskell still be Turing-complete?}
+\end{frame}
+
+\begin{frame}[fragile]{Naive implementation of the Y combinator}
+  \begin{verbatim}
+    Prelude> y = \f -> (\x -> f (x x)) (\x -> f (x x))
+
+  <interactive>:7:23: error:
+    • Occurs check: cannot construct the infinite type:
+        t0 ~ t0 -> t
+      Expected type: t0 -> t
+        Actual type: (t0 -> t) -> t
+    • In the first argument of ‘x’, namely ‘x’
+      In the first argument of ‘f’, namely ‘(x x)’
+      In the expression: f (x x)
+    • Relevant bindings include
+        x :: (t0 -> t) -> t (bound at <interactive>:7:13)
+        f :: t -> t (bound at <interactive>:7:6)
+        y :: (t -> t) -> t (bound at <interactive>:7:1)
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+Define $\mu a . \app{F}{a}$
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Remember the types}
+  \begin{center}
+  \texttt{\yc} \\
+  \end{center}
+  \vspace{0.2in}
+  \begin{enumerate}
+    \item \texttt{f :: a -> b}
+    \item \texttt{x :: $\mu$ c . c -> a}
+    \uncover<2->{\item We need to be able to write the type of \texttt{x} in terms of $\mu a . \app{F}{a}$}
+    \uncover<3->{\item \texttt{x :: $\mu$ c . F(c)}, where \texttt{F(c) = c -> a} for some fixed \texttt{a}}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+Define \texttt{F(c) = c -> a}
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+
+    newtype F' c a = F' (c -> a)
+    unF (F' f) = f
+    type F c = Mu (F' c)
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+Define \texttt{F(c) = c -> a}
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+
+    newtype F' c a = F' (c -> a)
+    unF (F' f) = f
+    type F c = Mu (F' c)
+    unroll' = unF  . unroll
+    roll'   = roll . F'
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Implementing the Y combinator}
+  \begin{verbatim}
+    newtype Mu f = Mu (f (Mu f)
+    unroll (Mu f) = f
+    roll = Mu
+
+    newtype F' c a = F' (c -> a)
+    unF (F' f) = f
+    type F c = Mu (F' c)
+    unroll' = unF  . unroll
+    roll'   = roll . F'
+
+    y f = (\x -> f (unroll' x x))
+      $ roll' (\x -> f (unroll' x x))
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Recursion schemes}
+\texttt{Mu} is the same as \texttt{Fix} from the \emph{recursion-schemes} library!
+  \begin{verbatim}
+    newtype Fix f = Fix (f (Fix f))
+
+    unfix (Fix f) = f
+    fix = Fix
+  \end{verbatim}
+\end{frame}
+
+\section{Some additional theory}
+
+\begin{frame}[fragile]{Data and codata}
+  \begin{itemize}
+    \uncover<1->{\item Data consists of indefinitely large, but finite structures}
       \begin{itemize}
-        \item Milk \item Eggs \item Potatos
+        \uncover<2->{\item For example, finite lists}
+        \uncover<3->{\item Data is defined by constructors}
+        \uncover<4->{\texttt{Cons} allows us to build a bigger list using an element and a given list}
+        \uncover<5->{Use structural induction for proofs}
       \end{itemize}
-
-    \column{0.33\textwidth}
-      Enumerations
-      \begin{enumerate}
-        \item First, \item Second and \item Last.
-      \end{enumerate}
-
-    \column{0.33\textwidth}
-      Descriptions
-      \begin{description}
-        \item[PowerPoint] Meeh. \item[Beamer] Yeeeha.
-      \end{description}
-  \end{columns}
-\end{frame}
-\begin{frame}{Animation}
-  \begin{itemize}[<+- | alert@+>]
-    \item \alert<4>{This is\only<4>{ really} important}
-    \item Now this
-    \item And now this
+    \uncover<6->{\item Codata consists of data, but also includes potentially infinite structures}
+      \begin{itemize}
+        \uncover<7->{\item For example, streams}
+        \uncover<8->{\item Data is defined by destructors}
+        \uncover<9->{\item \texttt{Head} and \texttt{Tail} allow us to get an element and a new stream, given a stream}
+        \uncover<10->{Use coinduction for proofs}
+      \end{itemize}
   \end{itemize}
 \end{frame}
-\begin{frame}{Figures}
-  \begin{figure}
-    \newcounter{density}
-    \setcounter{density}{20}
-    \begin{tikzpicture}
-      \def\couleur{alerted text.fg}
-      \path[coordinate] (0,0)  coordinate(A)
-                  ++( 90:5cm) coordinate(B)
-                  ++(0:5cm) coordinate(C)
-                  ++(-90:5cm) coordinate(D);
-      \draw[fill=\couleur!\thedensity] (A) -- (B) -- (C) --(D) -- cycle;
-      \foreach \x in {1,...,40}{%
-          \pgfmathsetcounter{density}{\thedensity+20}
-          \setcounter{density}{\thedensity}
-          \path[coordinate] coordinate(X) at (A){};
-          \path[coordinate] (A) -- (B) coordinate[pos=.10](A)
-                              -- (C) coordinate[pos=.10](B)
-                              -- (D) coordinate[pos=.10](C)
-                              -- (X) coordinate[pos=.10](D);
-          \draw[fill=\couleur!\thedensity] (A)--(B)--(C)-- (D) -- cycle;
-      }
-    \end{tikzpicture}
-    \caption{Rotated square from
-    \href{http://www.texample.net/tikz/examples/rotated-polygons/}{texample.net}.}
-  \end{figure}
-\end{frame}
-\begin{frame}{Tables}
-  \begin{table}
-    \caption{Largest cities in the world (source: Wikipedia)}
-    \begin{tabular}{lr}
-      \toprule
-      City & Population\\
-      \midrule
-      Mexico City & 20,116,842\\
-      Shanghai & 19,210,000\\
-      Peking & 15,796,450\\
-      Istanbul & 14,160,467\\
-      \bottomrule
-    \end{tabular}
-  \end{table}
-\end{frame}
-\begin{frame}{Blocks}
-  Three different block environments are pre-defined and may be styled with an
-  optional background color.
 
-  \begin{columns}[T,onlytextwidth]
-    \column{0.5\textwidth}
-      \begin{block}{Default}
-        Block content.
-      \end{block}
-
-      \begin{alertblock}{Alert}
-        Block content.
-      \end{alertblock}
-
-      \begin{exampleblock}{Example}
-        Block content.
-      \end{exampleblock}
-
-    \column{0.5\textwidth}
-
-      \metroset{block=fill}
-
-      \begin{block}{Default}
-        Block content.
-      \end{block}
-
-      \begin{alertblock}{Alert}
-        Block content.
-      \end{alertblock}
-
-      \begin{exampleblock}{Example}
-        Block content.
-      \end{exampleblock}
-
-  \end{columns}
-\end{frame}
-\begin{frame}{Math}
-  \begin{equation*}
-    e = \lim_{n\to \infty} \left(1 + \frac{1}{n}\right)^n
-  \end{equation*}
-\end{frame}
-\begin{frame}{Line plots}
-  \begin{figure}
-    \begin{tikzpicture}
-      \begin{axis}[
-        mlineplot,
-        width=0.9\textwidth,
-        height=6cm,
-      ]
-
-        \addplot {sin(deg(x))};
-        \addplot+[samples=100] {sin(deg(2*x))};
-
-      \end{axis}
-    \end{tikzpicture}
-  \end{figure}
-\end{frame}
-\begin{frame}{Bar charts}
-  \begin{figure}
-    \begin{tikzpicture}
-      \begin{axis}[
-        mbarplot,
-        xlabel={Foo},
-        ylabel={Bar},
-        width=0.9\textwidth,
-        height=6cm,
-      ]
-
-      \addplot plot coordinates {(1, 20) (2, 25) (3, 22.4) (4, 12.4)};
-      \addplot plot coordinates {(1, 18) (2, 24) (3, 23.5) (4, 13.2)};
-      \addplot plot coordinates {(1, 10) (2, 19) (3, 25) (4, 15.2)};
-
-      \legend{lorem, ipsum, dolor}
-
-      \end{axis}
-    \end{tikzpicture}
-  \end{figure}
-\end{frame}
-\begin{frame}{Quotes}
-  \begin{quote}
-    Veni, Vidi, Vici
-  \end{quote}
+\begin{frame}[fragile]{Least fixed points}
+  \begin{itemize}
+    \uncover<1->{\item Recall that \texttt{IntList = $\mu$ a . 1 + Int * a}}
+    \uncover<2->{\item \texttt{F a = 1 + Int * a}}
+    \uncover<3->{\item The type of finite integer lists is the \textbf{least fixed point} of F}
+    \uncover<4->{\item The least fixed point is the least set $X$ for which $X = \app{F}{X}$\footnotemark}
+    \uncover<5->{\item All elements of $X$ can be generated by $F$}
+  \end{itemize}
+  \uncover<4->{\footnotetext[1]{See the Knaster-Tarski Theorem for a rigorous definition}}
 \end{frame}
 
-{%
-\setbeamertemplate{frame footer}{My custom footer}
-\begin{frame}[fragile]{Frame footer}
-    \themename defines a custom beamer template to add a text to the footer. It can be set via
-    \begin{verbatim}\setbeamertemplate{frame footer}{My custom footer}\end{verbatim}
-\end{frame}
-}
-
-\begin{frame}{References}
-  Some references to showcase [allowframebreaks] \cite{knuth92,ConcreteMath,Simpson,Er01,greenwade93}
+\begin{frame}[fragile]{Greatest fixed points}
+  \begin{itemize}
+    \uncover<1->{\item \texttt{IntStream = $\mu$ a . Int * a}}
+    \uncover<2->{\item \texttt{F a = Int * a}}
+    \uncover<3->{\item The type of integer streams is the \textbf{greatest fixed point} of F}
+    \uncover<4->{\item The greatest fixed point is the greatest set $X$ for which $X = \app{F}{X}$\footnotemark}
+  \end{itemize}
+  \uncover<4->{\footnotetext[1]{See the Knaster-Tarski Theorem for a rigorous definition}}
 \end{frame}
 
-\section{Conclusion}
-
-\begin{frame}{Summary}
-
-  Get the source of this theme and the demo presentation from
-
-  \begin{center}\url{github.com/matze/mtheme}\end{center}
-
-  The theme \emph{itself} is licensed under a
-  \href{http://creativecommons.org/licenses/by-sa/4.0/}{Creative Commons
-  Attribution-ShareAlike 4.0 International License}.
-
-  \begin{center}\ccbysa\end{center}
-
+\begin{frame}[fragile]{Why it matters}
+  \begin{itemize}
+    \uncover<1->{\item The typechecking algorithm for equi-recursive types works by determining whether a type is a member of a recursive type's least/greatest fixed point}
+    \uncover<2->{\item For category theorists, data is an initial F-algebra, codata is a terminal F-coalgebra}
+  \end{itemize}
 \end{frame}
 
-{\setbeamercolor{palette primary}{fg=black, bg=yellow}
-\begin{frame}[standout]
-  Questions?
-\end{frame}
-}
+\section*{Conclusion}
 
-\appendix
-
-\begin{frame}[fragile]{Backup slides}
-  Sometimes, it is useful to add slides at the end of your presentation to
-  refer to during audience questions.
-
-  The best way to do this is to include the \verb|appendixnumberbeamer|
-  package in your preamble and call \verb|\appendix| before your backup slides.
-
-  \themename will automatically turn off slide numbering and progress bars for
-  slides in the appendix.
+\begin{frame}[fragile]{Conclusion}
+  \begin{itemize}
+    \uncover<1->{\item The type operator $\mu$ allows us to type recursive data and terms}
+    \uncover<2->{\item $\mu$ is defined as a type-level fixpoint combinator: $\mu a . \app{F}{a}$}
+    \uncover<3->{\item The equi-recursive approach treats a recursive type as \emph{equal} to its expansion}
+    \uncover<4->{\item The iso-recursive approach treats a recursive type as \emph{isomorphic} to its expansion}
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[allowframebreaks]{References}
-
-  \bibliography{demo}
-  \bibliographystyle{abbrv}
-
+\begin{frame}[fragile]{Further reading}
+  \begin{enumerate}
+    \item \href{https://mitpress.mit.edu/books/types-and-programming-languages}{\emph{Types and Programming Languages}} by Benjamin Pierce
+    \item \href{http://homepages.inf.ed.ac.uk/wadler/papers/free-rectypes/free-rectypes.txt}{``Recursive types for free!"} by Philip Wadler
+    \item \href{http://blog.sumtypeofway.com/an-introduction-to-recursion-schemes/}{Recursion schemes}
+    \item \href{https://jozefg.bitbucket.io/posts/2013-11-09-iso-recursive-types.html}{Fixpoints and iso-recursive types}
+    \item \href{http://types2004.lri.fr/SLIDES/altenkirch.pdf}{Data and codata}
+  \end{enumerate}
 \end{frame}
 
+\begin{frame}[fragile]{Questions?}
+  \graphicspath{ {/Users/esther_wang/Desktop/} }
+  \includegraphics[scale=0.5]{cat.jpg}
+\end{frame}
 \end{document}
+% \begin{frame}[fragile]{Metropolis}
+
+  % The \themename theme is a Beamer theme with minimal visual noise
+  % inspired by the \href{https://github.com/hsrmbeamertheme/hsrmbeamertheme}{\textsc{hsrm} Beamer
+  % Theme} by Benjamin Weiss.
+
+  % Enable the theme by loading
+
+  % \begin{verbatim}    \documentclass{beamer}
+    % \usetheme{metropolis}\end{verbatim}
+
+  % Note, that you have to have Mozilla's \emph{Fira Sans} font and XeTeX
+  % installed to enjoy this wonderful typography.
+% \end{frame}
+% \begin{frame}[fragile]{Sections}
+  % Sections group slides of the same topic
+
+  % \begin{verbatim}    \section{Elements}\end{verbatim}
+
+  % for which \themename provides a nice progress indicator \ldots
+% \end{frame}
+
+% \section{Titleformats}
+
+% \begin{frame}{Metropolis titleformats}
+	% \themename supports 4 different titleformats:
+	% \begin{itemize}
+		% \item Regular
+		% \item \textsc{Smallcaps}
+		% \item \textsc{allsmallcaps}
+		% \item ALLCAPS
+	% \end{itemize}
+	% They can either be set at once for every title type or individually.
+% \end{frame}
+
+% {
+    % \metroset{titleformat frame=smallcaps}
+% \begin{frame}{Small caps}
+	% This frame uses the \texttt{smallcaps} titleformat.
+
+	% \begin{alertblock}{Potential Problems}
+		% Be aware, that not every font supports small caps. If for example you typeset your presentation with pdfTeX and the Computer Modern Sans Serif font, every text in smallcaps will be typeset with the Computer Modern Serif font instead.
+	% \end{alertblock}
+% \end{frame}
+% }
+
+% {
+% \metroset{titleformat frame=allsmallcaps}
+% \begin{frame}{All small caps}
+	% This frame uses the \texttt{allsmallcaps} titleformat.
+
+	% \begin{alertblock}{Potential problems}
+		% As this titleformat also uses smallcaps you face the same problems as with the \texttt{smallcaps} titleformat. Additionally this format can cause some other problems. Please refer to the documentation if you consider using it.
+
+		% As a rule of thumb: Just use it for plaintext-only titles.
+	% \end{alertblock}
+% \end{frame}
+% }
+
+% {
+% \metroset{titleformat frame=allcaps}
+% \begin{frame}{All caps}
+	% This frame uses the \texttt{allcaps} titleformat.
+
+	% \begin{alertblock}{Potential Problems}
+		% This titleformat is not as problematic as the \texttt{allsmallcaps} format, but basically suffers from the same deficiencies. So please have a look at the documentation if you want to use it.
+	% \end{alertblock}
+% \end{frame}
+% }
+
+% \section{Elements}
+
+% \begin{frame}[fragile]{Typography}
+      % \begin{verbatim}The theme provides sensible defaults to
+% \emph{emphasize} text, \alert{accent} parts
+% or show \textbf{bold} results.\end{verbatim}
+
+  % \begin{center}becomes\end{center}
+
+  % The theme provides sensible defaults to \emph{emphasize} text,
+  % \alert{accent} parts or show \textbf{bold} results.
+% \end{frame}
+
+% \begin{frame}{Font feature test}
+  % \begin{itemize}
+    % \item Regular
+    % \item \textit{Italic}
+    % \item \textsc{SmallCaps}
+    % \item \textbf{Bold}
+    % \item \textbf{\textit{Bold Italic}}
+    % \item \textbf{\textsc{Bold SmallCaps}}
+    % \item \texttt{Monospace}
+    % \item \texttt{\textit{Monospace Italic}}
+    % \item \texttt{\textbf{Monospace Bold}}
+    % \item \texttt{\textbf{\textit{Monospace Bold Italic}}}
+  % \end{itemize}
+% \end{frame}
+
+% \begin{frame}{Lists}
+  % \begin{columns}[T,onlytextwidth]
+    % \column{0.33\textwidth}
+      % Items
+      % \begin{itemize}
+        % \item Milk \item Eggs \item Potatos
+      % \end{itemize}
+
+    % \column{0.33\textwidth}
+      % Enumerations
+      % \begin{enumerate}
+        % \item First, \item Second and \item Last.
+      % \end{enumerate}
+
+    % \column{0.33\textwidth}
+      % Descriptions
+      % \begin{description}
+        % \item[PowerPoint] Meeh. \item[Beamer] Yeeeha.
+      % \end{description}
+  % \end{columns}
+% \end{frame}
+% \begin{frame}{Animation}
+  % \begin{itemize}[<+- | alert@+>]
+    % \item \alert<4>{This is\only<4>{ really} important}
+    % \item Now this
+    % \item And now this
+  % \end{itemize}
+% \end{frame}
+% \begin{frame}{Figures}
+  % \begin{figure}
+    % \newcounter{density}
+    % \setcounter{density}{20}
+    % \begin{tikzpicture}
+      % \def\couleur{alerted text.fg}
+      % \path[coordinate] (0,0)  coordinate(A)
+                  % ++( 90:5cm) coordinate(B)
+                  % ++(0:5cm) coordinate(C)
+                  % ++(-90:5cm) coordinate(D);
+      % \draw[fill=\couleur!\thedensity] (A) -- (B) -- (C) --(D) -- cycle;
+      % \foreach \x in {1,...,40}{%
+          % \pgfmathsetcounter{density}{\thedensity+20}
+          % \setcounter{density}{\thedensity}
+          % \path[coordinate] coordinate(X) at (A){};
+          % \path[coordinate] (A) -- (B) coordinate[pos=.10](A)
+                              % -- (C) coordinate[pos=.10](B)
+                              % -- (D) coordinate[pos=.10](C)
+                              % -- (X) coordinate[pos=.10](D);
+          % \draw[fill=\couleur!\thedensity] (A)--(B)--(C)-- (D) -- cycle;
+      % }
+    % \end{tikzpicture}
+    % \caption{Rotated square from
+    % \href{http://www.texample.net/tikz/examples/rotated-polygons/}{texample.net}.}
+  % \end{figure}
+% \end{frame}
+% \begin{frame}{Tables}
+  % \begin{table}
+    % \caption{Largest cities in the world (source: Wikipedia)}
+    % \begin{tabular}{lr}
+      % \toprule
+      % City & Population\\
+      % \midrule
+      % Mexico City & 20,116,842\\
+      % Shanghai & 19,210,000\\
+      % Peking & 15,796,450\\
+      % Istanbul & 14,160,467\\
+      % \bottomrule
+    % \end{tabular}
+  % \end{table}
+% \end{frame}
+% \begin{frame}{Blocks}
+  % Three different block environments are pre-defined and may be styled with an
+  % optional background color.
+
+  % \begin{columns}[T,onlytextwidth]
+    % \column{0.5\textwidth}
+      % \begin{block}{Default}
+        % Block content.
+      % \end{block}
+
+      % \begin{alertblock}{Alert}
+        % Block content.
+      % \end{alertblock}
+
+      % \begin{exampleblock}{Example}
+        % Block content.
+      % \end{exampleblock}
+
+    % \column{0.5\textwidth}
+
+      % \metroset{block=fill}
+
+      % \begin{block}{Default}
+        % Block content.
+      % \end{block}
+
+      % \begin{alertblock}{Alert}
+        % Block content.
+      % \end{alertblock}
+
+      % \begin{exampleblock}{Example}
+        % Block content.
+      % \end{exampleblock}
+
+  % \end{columns}
+% \end{frame}
+% \begin{frame}{Math}
+  % \begin{equation*}
+    % e = \lim_{n\to \infty} \left(1 + \frac{1}{n}\right)^n
+  % \end{equation*}
+% \end{frame}
+% \begin{frame}{Line plots}
+  % \begin{figure}
+    % \begin{tikzpicture}
+      % \begin{axis}[
+        % mlineplot,
+        % width=0.9\textwidth,
+        % height=6cm,
+      % ]
+
+        % \addplot {sin(deg(x))};
+        % \addplot+[samples=100] {sin(deg(2*x))};
+
+      % \end{axis}
+    % \end{tikzpicture}
+  % \end{figure}
+% \end{frame}
+% \begin{frame}{Bar charts}
+  % \begin{figure}
+    % \begin{tikzpicture}
+      % \begin{axis}[
+        % mbarplot,
+        % xlabel={Foo},
+        % ylabel={Bar},
+        % width=0.9\textwidth,
+        % height=6cm,
+      % ]
+
+      % \addplot plot coordinates {(1, 20) (2, 25) (3, 22.4) (4, 12.4)};
+      % \addplot plot coordinates {(1, 18) (2, 24) (3, 23.5) (4, 13.2)};
+      % \addplot plot coordinates {(1, 10) (2, 19) (3, 25) (4, 15.2)};
+
+      % \legend{lorem, ipsum, dolor}
+
+      % \end{axis}
+    % \end{tikzpicture}
+  % \end{figure}
+% \end{frame}
+% \begin{frame}{Quotes}
+  % \begin{quote}
+    % Veni, Vidi, Vici
+  % \end{quote}
+% \end{frame}
+
+% {%
+% \setbeamertemplate{frame footer}{My custom footer}
+% \begin{frame}[fragile]{Frame footer}
+    % \themename defines a custom beamer template to add a text to the footer. It can be set via
+    % \begin{verbatim}\setbeamertemplate{frame footer}{My custom footer}\end{verbatim}
+% \end{frame}
+% }
+
+% \begin{frame}{References}
+  % Some references to showcase [allowframebreaks] \cite{knuth92,ConcreteMath,Simpson,Er01,greenwade93}
+% \end{frame}
+
+% \section{Conclusion}
+
+% \begin{frame}{Summary}
+
+  % Get the source of this theme and the demo presentation from
+
+  % \begin{center}\url{github.com/matze/mtheme}\end{center}
+
+  % The theme \emph{itself} is licensed under a
+  % \href{http://creativecommons.org/licenses/by-sa/4.0/}{Creative Commons
+  % Attribution-ShareAlike 4.0 International License}.
+
+  % \begin{center}\ccbysa\end{center}
+
+% \end{frame}
+
+% {\setbeamercolor{palette primary}{fg=black, bg=yellow}
+% \begin{frame}[standout]
+  % Questions?
+% \end{frame}
+% }
+
+% \appendix
+
+% \begin{frame}[fragile]{Backup slides}
+  % Sometimes, it is useful to add slides at the end of your presentation to
+  % refer to during audience questions.
+
+  % The best way to do this is to include the \verb|appendixnumberbeamer|
+  % package in your preamble and call \verb|\appendix| before your backup slides.
+
+  % \themename will automatically turn off slide numbering and progress bars for
+  % slides in the appendix.
+% \end{frame}
+
+% \begin{frame}[allowframebreaks]{References}
+
+  % \bibliography{demo}
+  % \bibliographystyle{abbrv}
+
+% \end{frame}
+
