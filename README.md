@@ -1,5 +1,5 @@
 # A talk on recursive types
-This talk was presented at LambdaConf 2018. Please download `recursive-types.pdf` for the best slide viewing experience.
+This talk was presented at LambdaConf 2018. Please download [`slides/recursive-types.pdf`](https://github.com/esdrw/recursive-types-talk/blob/master/slides/recursive-types.pdf) for the best slide viewing experience.
 
 ### `implementation/`
 Haskell code for the implementation of the Y Combinator.
