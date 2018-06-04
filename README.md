@@ -18,5 +18,5 @@ stack ghci y-combinator.hs
 ```
 to load the defined functions into ghci.
 
-### Slides
+### `slides/`
 These slides were complied using XeLaTeX using the [Metropolis](https://github.com/matze/mtheme) theme.
