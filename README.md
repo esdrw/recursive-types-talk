@@ -2,9 +2,9 @@
 This talk on recursive types was presented at LambdaConf 2018. Please download [`slides/recursive-types.pdf`](https://github.com/esdrw/recursive-types-talk/blob/master/slides/recursive-types.pdf) for the best slide viewing experience.
 
 ### `implementation/`
-Haskell code for the implementation of the Y Combinator.
+This directory contains Haskell code for the implementation of the Y Combinator.
 
-I use [stack](https://docs.haskellstack.org/en/stable/README/) with a [global configuration](https://docs.haskellstack.org/en/stable/yaml_configuration/) to run Haskell. After setting up stack, use
+I use [stack](https://docs.haskellstack.org/en/stable/README/) with a [global configuration](https://docs.haskellstack.org/en/stable/yaml_configuration/) to run Haskell. After setting up stack, change to the `implementation/` directory and use
 ```
 stack ghc y-combinator.hs
 ```
