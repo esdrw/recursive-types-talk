@@ -290,6 +290,8 @@ Define \texttt{F(c) = c -> a}
   \end{verbatim}
 \end{frame}
 
+
+% Edit: fixed typo from F' (c -> a) to F' (a -> c)
 \begin{frame}[fragile]{Implementing the Y combinator}
 Define \texttt{F(c) = c -> a}
   \begin{verbatim}
@@ -297,7 +299,6 @@ Define \texttt{F(c) = c -> a}
     unroll (Mu f) = f
     roll = Mu
 
-    -- Note: this used to incorrectly say c -> a.
     newtype F' c a = F' (a -> c)
     unF (F' f) = f
     type F c = Mu (F' c)
